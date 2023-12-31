@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://b5uwqslyv6f1s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lpwbe"]
+size = Vector2(63.9998, 64.0002)
+
+[node name="Destructible" type="StaticBody2D"]
+collision_layer = 273
+collision_mask = 0
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+rotation = 1.5708
+polygon = PackedVector2Array(-32.0001, -31.9999, -31.9999, 32.0001, 8.68798e-05, 24, 32.0001, 31.9999, 31.9999, -32.0001, -8.68798e-05, -24)
+
+[node name="Polygon2D2" type="Polygon2D" parent="."]
+rotation = 1.5708
+color = Color(1, 0, 1, 1)
+polygon = PackedVector2Array(-8.00003, -7.99997, 0, 0, -7.99997, 8.00003, 8.00003, 7.99997, 0, 0, 7.99997, -8.00003)
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2(0, 9.53674e-07)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_lpwbe")
+debug_color = Color(0.300268, 0.748907, 0, 0.392157)
+
+[connection signal="tree_entered" from="." to="." method="_on_tree_entered"]

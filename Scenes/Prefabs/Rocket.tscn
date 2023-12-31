@@ -1,0 +1,73 @@
+[gd_scene load_steps=7 format=3 uid="uid://bvlqntjpxguqn"]
+
+[ext_resource type="Script" path="res://Scripts/Rocket.gd" id="1_lnpsl"]
+[ext_resource type="Texture2D" uid="uid://dxp77wq60c2rr" path="res://Assets/Textures/CloudTexture.png" id="2_bb05p"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7vcwg"]
+
+[sub_resource type="Curve" id="Curve_kustd"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.246032, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_fewf8"]
+offsets = PackedFloat32Array(0.25, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0b43j"]
+radius = 8.0
+height = 31.9999
+
+[node name="Rocket" type="RigidBody2D"]
+collision_layer = 0
+collision_mask = 0
+physics_material_override = SubResource("PhysicsMaterial_7vcwg")
+gravity_scale = 0.0
+max_contacts_reported = 1
+contact_monitor = true
+script = ExtResource("1_lnpsl")
+base_velocity = 1000
+
+[node name="ParticleTrails" type="CPUParticles2D" parent="."]
+position = Vector2(-16, 0)
+amount = 20
+lifetime = 0.4
+speed_scale = 0.8
+texture = ExtResource("2_bb05p")
+emission_shape = 1
+emission_sphere_radius = 5.0
+direction = Vector2(0, 0)
+spread = 0.0
+gravity = Vector2(0, 0)
+damping_min = 1.0
+damping_max = 1.0
+scale_amount_min = 0.2
+scale_amount_max = 0.6
+scale_amount_curve = SubResource("Curve_kustd")
+color_ramp = SubResource("Gradient_fewf8")
+
+[node name="Hurtbox" type="CollisionShape2D" parent="."]
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_0b43j")
+
+[node name="BodySprite" type="Polygon2D" parent="."]
+rotation = 1.5708
+polygon = PackedVector2Array(-8, -8, -8, 8, 6.99382e-07, 16, 8, 8, 8, -8, -6.99382e-07, -16)
+
+[node name="HeadSprite" type="Polygon2D" parent="."]
+rotation = 1.5708
+color = Color(1, 0, 0, 1)
+polygon = PackedVector2Array(-8, -8, -8, 2.89599e-05, -2.89599e-05, -8, 8, -2.89599e-05, 8, -8, -5.79198e-05, -16)
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 304
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Hitbox"]
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_0b43j")
+debug_color = Color(0, 0.6, 0.701961, 0)
+
+[connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
+[connection signal="area_entered" from="Hitbox" to="." method="_on_hit_area"]
+[connection signal="area_exited" from="Hitbox" to="." method="_on_exit_area"]
+[connection signal="body_entered" from="Hitbox" to="." method="_on_hit_body"]

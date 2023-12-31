@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{d1e984c3-3c39-4ae0-86cd-135ef90009a1}">
+		<property name="assetPath">
+			<value>SFX/rocket_shoot.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>4.0231519274376417</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{feda7535-5e47-42d4-a8d3-15d59bd52b6e}</destination>
+		</relationship>
+	</object>
+</objects>
