@@ -1,25 +1,35 @@
 extends CharacterBody2D
 
+class_name Player
+
+enum Grounding {GROUNDED, AIRBONE, LAUNCHED, SLIDING}
+ 
 # --------- VARIABLES ---------- #
 
 @export_category("Player Properties") # You can tweak these changes according to your likings
 @export var move_speed: float = 400
+@export var slide_speed: float = 600
 @export var jump_force: float = 600
-@export var gravity: float = 30
+@export var global_gravity_mul: float = 1
+@export var mass: float = 1
 @export var max_jump_count: int = 2
-@export var coyote_time: float = 0.1
-var coyote_time_left = coyote_time
-var jump_count: int = 2
+@export var max_coyote_time: float = 0.1
+
+var just_launched: bool = false
+var coyote_time: float = max_coyote_time
+var jump_count: int = max_jump_count
 
 @export_category("Toggle Functions") # Double jump feature is disable by default (Can be toggled from inspector)
 @export var double_jump := false
 
-var is_grounded: bool = false
+var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+var grounding: Grounding = Grounding.GROUNDED
 
 @onready var player_sprite = $AnimatedSprite2D
 @onready var spawn_point = %SpawnPoint
 @onready var particle_trails = $ParticleTrails
 @onready var death_particles = $DeathParticles
+@onready var slide_scanner: RayCast2D = $SlideScanner
 
 # --------- BUILT-IN FUNCTIONS ---------- #
 
@@ -29,30 +39,64 @@ func _process(_delta):
 	player_animations()
 	flip_player()
 
+func _physics_process(_delta):
+	# Update grounding
+
+	match grounding:
+
+		Grounding.GROUNDED:
+			coyote_time = max_coyote_time
+			jump_count = max_jump_count
+
+			if !is_on_floor():
+				grounding = Grounding.AIRBONE
+
+		Grounding.AIRBONE:
+			move_gravity(_delta)
+			coyote_time -= _delta
+
+			if is_on_floor():
+				grounding = Grounding.GROUNDED
+				
+		Grounding.LAUNCHED:
+			move_gravity(_delta)
+
+			# TODO: Grounding instantly becomes true if launched from ground
+
+			if just_launched:
+				just_launched = false
+			else:
+				if is_on_ceiling()||is_on_wall():
+					grounding = Grounding.AIRBONE
+				elif is_on_floor():
+					grounding = Grounding.GROUNDED
+
+	if slide_scanner.is_colliding():
+		print(slide_scanner.get_collision_point())
+
 # --------- CUSTOM FUNCTIONS ---------- #
+
+func move_gravity(_delta):
+	var accel = gravity * _delta *global_gravity_mul
+	velocity.y += accel
 
 # <-- Player Movement Code -->
 func movement(_delta):
-	# Gravity
-	if !is_on_floor():
-		coyote_time_left -= _delta
-		velocity.y += gravity
-	elif is_on_floor():
-		coyote_time_left = coyote_time
-		jump_count = max_jump_count
+	match grounding:
+		Grounding.LAUNCHED:
+			pass
+		_:
+			handle_jumping(_delta)
+			var inputAxis = Input.get_axis("a", "d")
+			velocity = Vector2(inputAxis * move_speed, velocity.y)
 
-	handle_jumping(_delta)
-
-	# Move Player
-	var inputAxis = Input.get_axis("a", "d")
-	velocity = Vector2(inputAxis * move_speed, velocity.y)
 	move_and_slide()
 
 # Handles jumping functionality (double jump or single jump, can be toggled from inspector)
 func handle_jumping(_delta):
 	if Input.is_action_just_pressed("jump"):
 		if !double_jump:
-			if is_on_floor() or coyote_time_left >= 0:
+			if is_on_floor() or coyote_time >= 0:
 				jump()
 		elif double_jump:
 			if jump_count > 0:
@@ -61,8 +105,9 @@ func handle_jumping(_delta):
 
 # Player jump
 func jump():
-	jump_tween()
 	# # AudioManager.jump_sfx.play()
+	jump_tween()
+	grounding = Grounding.AIRBONE
 	velocity.y = - jump_force
 
 # Handle Player Animations
@@ -106,6 +151,13 @@ func jump_tween():
 	tween.tween_property(self, "scale", Vector2(0.7, 1.4), 0.1)
 	tween.tween_property(self, "scale", Vector2.ONE, 0.1)
 
+func apply_force(force: Vector2):
+	grounding = Grounding.LAUNCHED
+	just_launched = true
+	var launched_vector = force / mass
+	velocity = launched_vector
+	pass
+
 # --------- SIGNALS ---------- #
 
 # Reset the player's position to the current level spawn point if collided with any trap
@@ -115,3 +167,5 @@ func _on_collision_body_entered(_body):
 		# # AudioManager.death_sfx.play()
 		death_particles.emitting = true
 		death_tween()
+
+# STATUS

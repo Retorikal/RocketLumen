@@ -1,3 +1,4 @@
 {
-  "editor.insertSpaces": false
+	"editor.insertSpaces": false,
+	"godotTools.editorPath.godot4": "/home/retorikal/.local/share/godot/app_userdata/Godots/versions/Godot_v4_2_1-stable_linux_x86_64/Godot_v4.2.1-stable_linux.x86_64"
 }

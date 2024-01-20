@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bfb7hbcledqtv"]
+
+[node name="HitMarker" type="Polygon2D"]
+rotation = 1.5708
+color = Color(0.992157, 0, 0, 1)
+polygon = PackedVector2Array(-7.99997, 8.00003, 8.00003, 7.99997, 0, 0, 7.99997, -8.00003, -8.00003, -7.99997, 0, 0)

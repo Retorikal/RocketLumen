@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://bvlqntjpxguqn"]
+[gd_scene load_steps=8 format=3 uid="uid://bvlqntjpxguqn"]
 
 [ext_resource type="Script" path="res://Scripts/Rocket.gd" id="1_lnpsl"]
+[ext_resource type="PackedScene" uid="uid://cw6lvug11w46c" path="res://Scenes/Prefabs/Explosion.tscn" id="2_1gy0j"]
 [ext_resource type="Texture2D" uid="uid://dxp77wq60c2rr" path="res://Assets/Textures/CloudTexture.png" id="2_bb05p"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7vcwg"]
@@ -14,7 +15,7 @@ offsets = PackedFloat32Array(0.25, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0b43j"]
-radius = 8.0
+radius = 3.0
 height = 31.9999
 
 [node name="Rocket" type="RigidBody2D"]
@@ -25,7 +26,8 @@ gravity_scale = 0.0
 max_contacts_reported = 1
 contact_monitor = true
 script = ExtResource("1_lnpsl")
-base_velocity = 1000
+max_lifetime = 0.3
+payload = ExtResource("2_1gy0j")
 
 [node name="ParticleTrails" type="CPUParticles2D" parent="."]
 position = Vector2(-16, 0)
@@ -66,6 +68,12 @@ collision_mask = 304
 rotation = 1.5708
 shape = SubResource("CapsuleShape2D_0b43j")
 debug_color = Color(0, 0.6, 0.701961, 0)
+
+[node name="Head" type="Marker2D" parent="."]
+position = Vector2(16, 0)
+
+[node name="Tail" type="Marker2D" parent="."]
+position = Vector2(-24, 0)
 
 [connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
 [connection signal="area_entered" from="Hitbox" to="." method="_on_hit_area"]

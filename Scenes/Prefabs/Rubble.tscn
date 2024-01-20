@@ -6,6 +6,7 @@ height = 31.9999
 
 [node name="Rubble" type="RigidBody2D"]
 collision_mask = 17
+mass = 0.03
 max_contacts_reported = 1
 contact_monitor = true
 
