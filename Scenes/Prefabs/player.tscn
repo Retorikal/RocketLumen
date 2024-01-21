@@ -1,10 +1,11 @@
-[gd_scene load_steps=17 format=3 uid="uid://w7m6tehvvy3g"]
+[gd_scene load_steps=18 format=3 uid="uid://w7m6tehvvy3g"]
 
-[ext_resource type="Script" path="res://Scripts/Player.gd" id="1_pefl6"]
+[ext_resource type="Script" path="res://Scripts/Player/Player.gd" id="1_tht11"]
 [ext_resource type="Texture2D" uid="uid://cbss87b7xk5lc" path="res://Assets/Spritesheet/platformerPack_character.png" id="2_q0cxm"]
 [ext_resource type="Texture2D" uid="uid://dxp77wq60c2rr" path="res://Assets/Textures/CloudTexture.png" id="3_8vxmb"]
+[ext_resource type="Script" path="res://Scripts/Player/RocketLauncher.gd" id="3_633gv"]
 [ext_resource type="PackedScene" uid="uid://bvlqntjpxguqn" path="res://Scenes/Prefabs/Rocket.tscn" id="4_pph41"]
-[ext_resource type="Script" path="res://Scripts/RocketLauncher.gd" id="4_tshqf"]
+[ext_resource type="Script" path="res://Scripts/Player/SlideScanner.gd" id="6_0gha0"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_57bci"]
 atlas = ExtResource("2_q0cxm")
@@ -76,15 +77,9 @@ colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_mask = 16
-script = ExtResource("1_pefl6")
-move_speed = null
-slide_speed = null
+script = ExtResource("1_tht11")
 jump_force = 750.0
 global_gravity_mul = 3.0
-mass = null
-max_jump_count = null
-max_coyote_time = null
-double_jump = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
@@ -125,7 +120,7 @@ color_ramp = SubResource("Gradient_3gc37")
 
 [node name="RocketLauncher" type="Node2D" parent="."]
 position = Vector2(0, -8)
-script = ExtResource("4_tshqf")
+script = ExtResource("3_633gv")
 rocket = ExtResource("4_pph41")
 sibling_hitbox_specifier = "Hurtbox"
 
@@ -147,9 +142,22 @@ scale_amount_max = 0.6
 scale_amount_curve = SubResource("Curve_w7qy8")
 color_ramp = SubResource("Gradient_lfvsn")
 
-[node name="SlideScanner" type="RayCast2D" parent="."]
-position = Vector2(0, -24)
-target_position = Vector2(56, 56)
+[node name="SlideScanner" type="Node2D" parent="."]
+script = ExtResource("6_0gha0")
+
+[node name="HeadScanner" type="RayCast2D" parent="SlideScanner"]
+position = Vector2(24, 24)
+target_position = Vector2(32, 32)
+collision_mask = 16
+
+[node name="TailScanner" type="RayCast2D" parent="SlideScanner"]
+position = Vector2(-16, 16)
+target_position = Vector2(-40, 40)
+collision_mask = 16
+
+[node name="CornerScanner" type="RayCast2D" parent="SlideScanner"]
+position = Vector2(24, 0)
+target_position = Vector2(40, 0)
 collision_mask = 16
 
 [connection signal="body_entered" from="Hurtbox" to="." method="_on_collision_body_entered"]

@@ -3,7 +3,9 @@ extends CharacterBody2D
 class_name Player
 
 enum Grounding {GROUNDED, AIRBONE, LAUNCHED, SLIDING}
- 
+enum SlideDir {FACE_0, FACE_90, FACE_180, FACE_270}
+const PI_2 = PI / 2
+
 # --------- VARIABLES ---------- #
 
 @export_category("Player Properties") # You can tweak these changes according to your likings
@@ -12,15 +14,16 @@ enum Grounding {GROUNDED, AIRBONE, LAUNCHED, SLIDING}
 @export var jump_force: float = 600
 @export var global_gravity_mul: float = 1
 @export var mass: float = 1
-@export var max_jump_count: int = 2
+@export var max_extra_jump_count: int = 1
 @export var max_coyote_time: float = 0.1
 
 var just_launched: bool = false
+var just_stopped_sliding: bool = false
 var coyote_time: float = max_coyote_time
-var jump_count: int = max_jump_count
+var extra_jump_count: int = max_extra_jump_count
+var slide_orient: SlideDir = SlideDir.FACE_0
 
 @export_category("Toggle Functions") # Double jump feature is disable by default (Can be toggled from inspector)
-@export var double_jump := false
 
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var grounding: Grounding = Grounding.GROUNDED
@@ -29,19 +32,20 @@ var grounding: Grounding = Grounding.GROUNDED
 @onready var spawn_point = %SpawnPoint
 @onready var particle_trails = $ParticleTrails
 @onready var death_particles = $DeathParticles
-@onready var slide_scanner: RayCast2D = $SlideScanner
+@onready var slide_scanner: SlideScanner = $SlideScanner
+@onready var shape: CollisionShape2D = $PlayerShape
 
 # --------- BUILT-IN FUNCTIONS ---------- #
 
 func _process(_delta):
 	# Calling functions
-	movement(_delta)
+	pass
 	player_animations()
-	flip_player()
 
 func _physics_process(_delta):
 	# Update grounding
 
+	movement(_delta)
 	pass
 
 # --------- CUSTOM FUNCTIONS ---------- #
@@ -52,22 +56,33 @@ func move_gravity(_delta):
 
 # <-- Player Movement Code -->
 func movement(_delta):
+	var can_slide = Input.is_action_pressed("slide") && slide_scanner.is_on_sliding_terrain()
+	# var can_slide = slide_scanner.is_on_sliding_terrain()
+
 	match grounding:
 		Grounding.GROUNDED:
 			coyote_time = max_coyote_time
-			jump_count = max_jump_count
+			extra_jump_count = max_extra_jump_count
 			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
+			handle_jump()
 
 			if !is_on_floor():
 				grounding = Grounding.AIRBONE
 
 		Grounding.SLIDING:
-			pass
+			handle_jump()
+			
+			if !can_slide:
+				if is_on_floor():
+					grounding = Grounding.GROUNDED
+				else:
+					grounding = Grounding.LAUNCHED
 
 		Grounding.AIRBONE:
 			move_gravity(_delta)
 			coyote_time -= _delta
 			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
+			handle_jump()
 
 			if is_on_floor():
 				grounding = Grounding.GROUNDED
@@ -85,7 +100,32 @@ func movement(_delta):
 				elif is_on_floor():
 					grounding = Grounding.GROUNDED
 
+	if can_slide&&!just_stopped_sliding:
+		if slide_scanner.is_facing_corner():
+			latch_wall()
+
+		grounding = Grounding.SLIDING
+
+	if grounding != Grounding.SLIDING:
+		if velocity.x != 0:
+			flip_player(velocity.x > 0)
+		slide_orient = SlideDir.FACE_0
+		rotation = 0
+
+	if just_stopped_sliding&&!slide_scanner.is_on_sliding_terrain():
+		just_stopped_sliding = false
+		# Snap to slide location
+
 	move_and_slide()
+
+func handle_jump():
+	if Input.is_action_pressed("jump"):
+		if grounding == Grounding.GROUNDED or coyote_time >= 0:
+			jump()
+
+		elif extra_jump_count > 0:
+			jump()
+			extra_jump_count -= 1
 
 # Player jump
 func jump():
@@ -94,10 +134,33 @@ func jump():
 	grounding = Grounding.AIRBONE
 	velocity.y = - jump_force
 
-func slide():
-	if Input.is_action_pressed("slide"):
-		pass
-		
+func latch_wall():
+	var collision_point = slide_scanner.corner_collision_point()
+	var facing_mul = (-1 if !player_sprite.flip_h else 1)
+
+	position += collision_point - slide_scanner.global_position
+
+	# If latching from air, determine direction based on flight direction
+	if grounding == Grounding.AIRBONE||grounding == Grounding.LAUNCHED:
+		print("Sliding from air..")
+		if velocity.y > 0:
+			print("Going down")
+			flip_player(player_sprite.flip_h)
+			facing_mul = - facing_mul
+			slide_orient = SlideDir.FACE_270
+		else:
+			print("Going up")
+			slide_orient = SlideDir.FACE_90
+	else:
+		print("Sliding from what?", grounding)
+		slide_orient = ((slide_orient + 1) % 4) as SlideDir
+	
+	rotation = facing_mul * PI_2 * slide_orient
+	var basevec = Vector2(velocity.length()* -facing_mul, 0)
+	velocity = basevec.rotated(rotation)
+
+	print(rad_to_deg(rotation), " - ", basevec, " - ", velocity)
+
 # Handle Player Animations
 func player_animations():
 	particle_trails.emitting = false
@@ -112,13 +175,13 @@ func player_animations():
 		player_sprite.play("Jump")
 
 # Flip player sprite based on X velocity
-func flip_player():
-	if velocity.x < 0:
-		player_sprite.flip_h = true
-		slide_scanner.scale = Vector2(-1, 1)
-	elif velocity.x > 0:
+func flip_player(facing_right: bool):
+	if facing_right:
 		player_sprite.flip_h = false
 		slide_scanner.scale = Vector2(1, 1)
+	else:
+		player_sprite.flip_h = true
+		slide_scanner.scale = Vector2(-1, 1)
 
 # Tween Animations
 func death_tween():
@@ -142,6 +205,9 @@ func jump_tween():
 	tween.tween_property(self, "scale", Vector2.ONE, 0.1)
 
 func apply_force(force: Vector2):
+	if grounding == Grounding.SLIDING:
+		just_stopped_sliding = true
+
 	grounding = Grounding.LAUNCHED
 	just_launched = true
 	var launched_vector = force / mass
@@ -158,17 +224,3 @@ func _on_collision_body_entered(_body):
 		death_particles.emitting = true
 		death_tween()
 
-func _input(event):
-	if event.is_action_pressed("jump")&&grounding != Grounding.LAUNCHED:
-		if !double_jump:
-			if is_on_floor() or coyote_time >= 0:
-				jump()
-		elif double_jump:
-			if jump_count > 0:
-				jump()
-				jump_count -= 1
-
-	# Mouse in viewport coordinates.
-	# print(event)
-	# if &&slide_scanner.is_colliding():
-	# 	print(slide_scanner.get_collision_point())
