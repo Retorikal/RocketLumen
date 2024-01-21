@@ -42,22 +42,36 @@ func _process(_delta):
 func _physics_process(_delta):
 	# Update grounding
 
-	match grounding:
+	pass
 
+# --------- CUSTOM FUNCTIONS ---------- #
+
+func move_gravity(_delta):
+	var accel = gravity * _delta *global_gravity_mul
+	velocity.y += accel
+
+# <-- Player Movement Code -->
+func movement(_delta):
+	match grounding:
 		Grounding.GROUNDED:
 			coyote_time = max_coyote_time
 			jump_count = max_jump_count
+			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
 
 			if !is_on_floor():
 				grounding = Grounding.AIRBONE
 
+		Grounding.SLIDING:
+			pass
+
 		Grounding.AIRBONE:
 			move_gravity(_delta)
 			coyote_time -= _delta
+			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
 
 			if is_on_floor():
 				grounding = Grounding.GROUNDED
-				
+
 		Grounding.LAUNCHED:
 			move_gravity(_delta)
 
@@ -71,37 +85,7 @@ func _physics_process(_delta):
 				elif is_on_floor():
 					grounding = Grounding.GROUNDED
 
-	if slide_scanner.is_colliding():
-		print(slide_scanner.get_collision_point())
-
-# --------- CUSTOM FUNCTIONS ---------- #
-
-func move_gravity(_delta):
-	var accel = gravity * _delta *global_gravity_mul
-	velocity.y += accel
-
-# <-- Player Movement Code -->
-func movement(_delta):
-	match grounding:
-		Grounding.LAUNCHED:
-			pass
-		_:
-			handle_jumping(_delta)
-			var inputAxis = Input.get_axis("a", "d")
-			velocity = Vector2(inputAxis * move_speed, velocity.y)
-
 	move_and_slide()
-
-# Handles jumping functionality (double jump or single jump, can be toggled from inspector)
-func handle_jumping(_delta):
-	if Input.is_action_just_pressed("jump"):
-		if !double_jump:
-			if is_on_floor() or coyote_time >= 0:
-				jump()
-		elif double_jump:
-			if jump_count > 0:
-				jump()
-				jump_count -= 1
 
 # Player jump
 func jump():
@@ -110,6 +94,10 @@ func jump():
 	grounding = Grounding.AIRBONE
 	velocity.y = - jump_force
 
+func slide():
+	if Input.is_action_pressed("slide"):
+		pass
+		
 # Handle Player Animations
 func player_animations():
 	particle_trails.emitting = false
@@ -127,8 +115,10 @@ func player_animations():
 func flip_player():
 	if velocity.x < 0:
 		player_sprite.flip_h = true
+		slide_scanner.scale = Vector2(-1, 1)
 	elif velocity.x > 0:
 		player_sprite.flip_h = false
+		slide_scanner.scale = Vector2(1, 1)
 
 # Tween Animations
 func death_tween():
@@ -168,4 +158,17 @@ func _on_collision_body_entered(_body):
 		death_particles.emitting = true
 		death_tween()
 
-# STATUS
+func _input(event):
+	if event.is_action_pressed("jump")&&grounding != Grounding.LAUNCHED:
+		if !double_jump:
+			if is_on_floor() or coyote_time >= 0:
+				jump()
+		elif double_jump:
+			if jump_count > 0:
+				jump()
+				jump_count -= 1
+
+	# Mouse in viewport coordinates.
+	# print(event)
+	# if &&slide_scanner.is_colliding():
+	# 	print(slide_scanner.get_collision_point())

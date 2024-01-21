@@ -77,18 +77,25 @@ colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_mask = 16
 script = ExtResource("1_pefl6")
+move_speed = null
+slide_speed = null
 jump_force = 750.0
 global_gravity_mul = 3.0
+mass = null
+max_jump_count = null
+max_coyote_time = null
+double_jump = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -8)
 sprite_frames = SubResource("SpriteFrames_4nss6")
 animation = &"Walk"
 
 [node name="PlayerShape" type="CollisionShape2D" parent="."]
-position = Vector2(0, 8)
 shape = SubResource("RectangleShape2D_f5i8s")
 
 [node name="Hurtbox" type="Area2D" parent="."]
+position = Vector2(0, -8)
 collision_layer = 256
 collision_mask = 33
 
@@ -97,7 +104,7 @@ position = Vector2(0, 8)
 shape = SubResource("RectangleShape2D_tvbjh")
 
 [node name="DeathParticles" type="CPUParticles2D" parent="."]
-position = Vector2(0, 16)
+position = Vector2(0, 8)
 emitting = false
 amount = 20
 lifetime = 0.6
@@ -117,12 +124,13 @@ scale_amount_curve = SubResource("Curve_m2jh0")
 color_ramp = SubResource("Gradient_3gc37")
 
 [node name="RocketLauncher" type="Node2D" parent="."]
+position = Vector2(0, -8)
 script = ExtResource("4_tshqf")
 rocket = ExtResource("4_pph41")
 sibling_hitbox_specifier = "Hurtbox"
 
 [node name="ParticleTrails" type="CPUParticles2D" parent="."]
-position = Vector2(0, 48)
+position = Vector2(0, 40)
 emitting = false
 amount = 20
 lifetime = 0.4
@@ -140,8 +148,8 @@ scale_amount_curve = SubResource("Curve_w7qy8")
 color_ramp = SubResource("Gradient_lfvsn")
 
 [node name="SlideScanner" type="RayCast2D" parent="."]
-position = Vector2(16, 0)
-target_position = Vector2(48, 48)
+position = Vector2(0, -24)
+target_position = Vector2(56, 56)
 collision_mask = 16
 
 [connection signal="body_entered" from="Hurtbox" to="." method="_on_collision_body_entered"]

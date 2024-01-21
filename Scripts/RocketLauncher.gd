@@ -13,7 +13,7 @@ func _ready():
 
 func _input(event):
 	# Mouse in viewport coordinates.
-	if event is InputEventMouseButton and event.pressed:
+	if event.is_action_pressed("launch"):
 		var heading = (global_position - get_global_mouse_position()).angle()
 		launch_rocket(heading)
 
