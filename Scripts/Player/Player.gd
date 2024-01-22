@@ -101,12 +101,14 @@ func movement(_delta):
 					grounding = Grounding.GROUNDED
 
 	if can_slide&&!just_stopped_sliding:
+		motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 		if slide_scanner.is_facing_corner():
 			latch_wall()
 
 		grounding = Grounding.SLIDING
 
 	if grounding != Grounding.SLIDING:
+		motion_mode = CharacterBody2D.MOTION_MODE_GROUNDED
 		if velocity.x != 0:
 			flip_player(velocity.x > 0)
 		slide_orient = SlideDir.FACE_0
@@ -142,17 +144,13 @@ func latch_wall():
 
 	# If latching from air, determine direction based on flight direction
 	if grounding == Grounding.AIRBONE||grounding == Grounding.LAUNCHED:
-		print("Sliding from air..")
 		if velocity.y > 0:
-			print("Going down")
 			flip_player(player_sprite.flip_h)
 			facing_mul = - facing_mul
 			slide_orient = SlideDir.FACE_270
 		else:
-			print("Going up")
 			slide_orient = SlideDir.FACE_90
 	else:
-		print("Sliding from what?", grounding)
 		slide_orient = ((slide_orient + 1) % 4) as SlideDir
 	
 	rotation = facing_mul * PI_2 * slide_orient

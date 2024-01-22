@@ -11,9 +11,12 @@ func is_on_sliding_terrain():
 
 func is_facing_corner():
 	if corn_scanner.is_colliding():
-		print("Corner scanner -;", corn_scanner.global_rotation_degrees, "collide at", corn_scanner.get_collision_point())
 		return true
 	return false
 
 func corner_collision_point():
 	return corn_scanner.get_collision_point()
+
+func get_wall_snap_shift():
+	# var offset = corn_scanner.transform.look
+	return corn_scanner.get_collision_point() - corn_scanner.global_position
