@@ -6,10 +6,7 @@ class_name Rocket
 @onready var body_sprite: Polygon2D = $BodySprite
 @onready var hitbox: Area2D = $Hitbox
 @onready var hurtbox: CollisionShape2D = $Hurtbox
-@onready var head_pt: Marker2D = $Head
-@onready var tail_pt: Marker2D = $Tail
-@onready var space_state = get_world_2d().direct_space_state
-@onready var last_tail_pos: Vector2 = head_pt.global_position
+@onready var forecast: RayCast2D = $Forecast
 
 @export var base_velocity = 2000
 @export var max_lifetime = 1.5
@@ -27,29 +24,23 @@ func _ready():
 
 func _physics_process(delta):
 	lifetime += delta
+	forecast.target_position = Vector2(linear_velocity.length() * delta * 1.5, 0)
+
+	if forecast.is_colliding():
+		detonate(forecast.get_collision_point())
 	if lifetime >= max_lifetime and not exploded:
-		detonate()
+		detonate(global_position)
 	rotation = linear_velocity.angle()
-	last_tail_pos = tail_pt.global_position
-	pass
 
 func _on_exit_area(area: Area2D):
 	if area == owner_hurtbox:
 		primed_selfhit = true
 
-func _on_hit_body(body: Node2D):
-	detonate()
-
-func _on_hit_area(area: Area2D):
-	if area == owner_hurtbox and not primed_selfhit:
-		return
-	detonate()
-
 func detach(node: Node):
 	remove_child(node)
 	get_tree().root.add_child(node)
 
-func detonate():
+func detonate(location: Vector2):
 	if exploded:
 		return
 
@@ -60,15 +51,8 @@ func detonate():
 	body_sprite.set_deferred("visible", false)
 	hurtbox.set_deferred("disabled", true)
 
-	var head_pos = head_pt.global_position
-	var query = PhysicsRayQueryParameters2D.create(last_tail_pos, head_pos)
-	var result = space_state.intersect_ray(query)
-
 	var marker: Node2D = payload.instantiate()
-	if len(result) > 0:
-		marker.set_deferred("position", result.position)
-	else:
-		marker.set_deferred("position", global_position)
+	marker.position = location
 	
 	get_tree().root.call_deferred("add_child", marker)
 	pass

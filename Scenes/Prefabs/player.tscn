@@ -78,8 +78,13 @@ colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_mask = 16
 script = ExtResource("1_tht11")
+move_speed = null
+slide_speed = null
 jump_force = 750.0
 global_gravity_mul = 3.0
+mass = null
+max_extra_jump_count = null
+max_coyote_time = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)

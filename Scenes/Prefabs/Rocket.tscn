@@ -27,6 +27,7 @@ max_contacts_reported = 1
 contact_monitor = true
 script = ExtResource("1_lnpsl")
 max_lifetime = 0.3
+launcher_velocity = null
 payload = ExtResource("2_1gy0j")
 
 [node name="ParticleTrails" type="CPUParticles2D" parent="."]
@@ -60,22 +61,8 @@ rotation = 1.5708
 color = Color(1, 0, 0, 1)
 polygon = PackedVector2Array(-8, -8, -8, 2.89599e-05, -2.89599e-05, -8, 8, -2.89599e-05, 8, -8, -5.79198e-05, -16)
 
-[node name="Hitbox" type="Area2D" parent="."]
-collision_layer = 0
+[node name="Forecast" type="RayCast2D" parent="."]
+target_position = Vector2(16, 0)
 collision_mask = 304
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="Hitbox"]
-rotation = 1.5708
-shape = SubResource("CapsuleShape2D_0b43j")
-debug_color = Color(0, 0.6, 0.701961, 0)
-
-[node name="Head" type="Marker2D" parent="."]
-position = Vector2(16, 0)
-
-[node name="Tail" type="Marker2D" parent="."]
-position = Vector2(-24, 0)
-
 [connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
-[connection signal="area_entered" from="Hitbox" to="." method="_on_hit_area"]
-[connection signal="area_exited" from="Hitbox" to="." method="_on_exit_area"]
-[connection signal="body_entered" from="Hitbox" to="." method="_on_hit_body"]
