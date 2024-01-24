@@ -4,7 +4,6 @@ class_name Rocket
 
 @onready var trails: CPUParticles2D = $ParticleTrails
 @onready var body_sprite: Polygon2D = $BodySprite
-@onready var hitbox: Area2D = $Hitbox
 @onready var hurtbox: CollisionShape2D = $Hurtbox
 @onready var forecast: RayCast2D = $Forecast
 

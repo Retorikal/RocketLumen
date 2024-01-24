@@ -2,6 +2,10 @@
 
 [ext_resource type="Script" path="res://Scripts/Explosion.gd" id="1_0qvpm"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_wjyq8"]
+custom_solver_bias = 1.0
+radius = 75.0
+
 [sub_resource type="Gradient" id="Gradient_obrc0"]
 offsets = PackedFloat32Array(0, 0.592593, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.881481, 1, 1, 1, 0)
@@ -20,13 +24,13 @@ scale_min = 10.0
 scale_max = 15.0
 color_ramp = SubResource("GradientTexture1D_cbgjn")
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_wjyq8"]
-custom_solver_bias = 1.0
-radius = 75.0
-
-[node name="Explosion" type="Node2D"]
+[node name="Explosion" type="Area2D"]
+collision_layer = 0
 script = ExtResource("1_0qvpm")
 blow_force = 2000.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_wjyq8")
 
 [node name="Particles" type="GPUParticles2D" parent="."]
 emitting = false
@@ -36,11 +40,5 @@ lifetime = 0.3
 one_shot = true
 explosiveness = 1.0
 
-[node name="Hitbox" type="Area2D" parent="."]
-collision_layer = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-shape = SubResource("CircleShape2D_wjyq8")
-
+[connection signal="body_entered" from="." to="." method="_on_hitbox_body_entered"]
 [connection signal="finished" from="Particles" to="." method="_on_gpu_particles_2d_finished"]
-[connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
