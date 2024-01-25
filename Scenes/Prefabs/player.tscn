@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://w7m6tehvvy3g"]
+[gd_scene load_steps=20 format=3 uid="uid://w7m6tehvvy3g"]
 
 [ext_resource type="Script" path="res://Scripts/Player/Player.gd" id="1_tht11"]
 [ext_resource type="Texture2D" uid="uid://cbss87b7xk5lc" path="res://Assets/Spritesheet/platformerPack_character.png" id="2_q0cxm"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://Scripts/Player/RocketLauncher.gd" id="3_633gv"]
 [ext_resource type="PackedScene" uid="uid://bvlqntjpxguqn" path="res://Scenes/Prefabs/Rocket.tscn" id="4_pph41"]
 [ext_resource type="Script" path="res://Scripts/Player/SlideScanner.gd" id="6_0gha0"]
+[ext_resource type="PackedScene" uid="uid://bjig62d4gto0q" path="res://Scenes/Prefabs/StardustScatterer.tscn" id="7_q5s7y"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_57bci"]
 atlas = ExtResource("2_q0cxm")
@@ -74,6 +75,9 @@ point_count = 3
 [sub_resource type="Gradient" id="Gradient_lfvsn"]
 offsets = PackedFloat32Array(0.25, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wyg38"]
+size = Vector2(128, 56)
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_mask = 16
@@ -164,5 +168,13 @@ collision_mask = 16
 position = Vector2(24, 0)
 target_position = Vector2(40, 0)
 collision_mask = 16
+
+[node name="StardustScatterer" parent="SlideScanner" instance=ExtResource("7_q5s7y")]
+collision_layer = 0
+collision_mask = 32
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SlideScanner/StardustScatterer"]
+position = Vector2(32, 12)
+shape = SubResource("RectangleShape2D_wyg38")
 
 [connection signal="body_entered" from="Hurtbox" to="." method="_on_collision_body_entered"]
