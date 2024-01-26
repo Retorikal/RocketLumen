@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://cjanwm3sy2x37"]
+[gd_scene load_steps=9 format=3 uid="uid://cjanwm3sy2x37"]
 
 [ext_resource type="PackedScene" uid="uid://w7m6tehvvy3g" path="res://Scenes/Prefabs/player.tscn" id="2_pay8t"]
 [ext_resource type="Script" path="res://Scripts/GameManager.gd" id="4_vgfkr"]
 [ext_resource type="Script" path="res://Scripts/GameUI.gd" id="6_66mfc"]
 [ext_resource type="PackedScene" uid="uid://b53p5hpd1sytn" path="res://Scenes/Prefabs/LevelChunk.tscn" id="7_htq77"]
 [ext_resource type="Texture2D" uid="uid://clreg520jah1j" path="res://Assets/platformPack_item008.png" id="7_j7jun"]
+[ext_resource type="PackedScene" uid="uid://dqtqmin3n72ln" path="res://Scenes/Prefabs/LevelChunkA-WD.tscn" id="8_86ntf"]
 [ext_resource type="FontFile" uid="uid://qgc4vi5osk7v" path="res://Assets/Fonts/Star Choco.ttf" id="8_gwcy2"]
 [ext_resource type="PackedScene" uid="uid://cgx0hc6y4x3ev" path="res://Scenes/Prefabs/Rubble.tscn" id="10_lmrgr"]
 
@@ -12,7 +13,8 @@
 
 [node name="Player" parent="." instance=ExtResource("2_pay8t")]
 z_index = 1
-position = Vector2(-400, 136)
+position = Vector2(224, 368)
+airbone_control = null
 max_extra_jump_count = 0
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
@@ -142,3 +144,6 @@ position = Vector2(1984, 704)
 
 [node name="Node2D2" type="Node2D" parent="."]
 position = Vector2(-152.2, -152.2)
+
+[node name="LevelChunk2" parent="." instance=ExtResource("8_86ntf")]
+position = Vector2(-960, 0)

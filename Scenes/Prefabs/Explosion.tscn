@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cw6lvug11w46c"]
+[gd_scene load_steps=8 format=3 uid="uid://cw6lvug11w46c"]
 
 [ext_resource type="Script" path="res://Scripts/Explosion.gd" id="1_0qvpm"]
+[ext_resource type="Script" path="res://Scripts/StardustScatterer.gd" id="2_8jjls"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_wjyq8"]
 custom_solver_bias = 1.0
@@ -24,6 +25,9 @@ scale_min = 10.0
 scale_max = 15.0
 color_ramp = SubResource("GradientTexture1D_cbgjn")
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_mju2r"]
+radius = 128.0
+
 [node name="Explosion" type="Area2D"]
 collision_layer = 0
 script = ExtResource("1_0qvpm")
@@ -39,6 +43,15 @@ process_material = SubResource("ParticleProcessMaterial_4ncbg")
 lifetime = 0.3
 one_shot = true
 explosiveness = 1.0
+
+[node name="StardustScatterer" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 48
+script = ExtResource("2_8jjls")
+scattering = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StardustScatterer"]
+shape = SubResource("CircleShape2D_mju2r")
 
 [connection signal="body_entered" from="." to="." method="_on_hitbox_body_entered"]
 [connection signal="finished" from="Particles" to="." method="_on_gpu_particles_2d_finished"]

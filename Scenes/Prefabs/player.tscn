@@ -80,12 +80,13 @@ colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
 size = Vector2(128, 56)
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
-collision_mask = 16
+collision_mask = 48
 script = ExtResource("1_tht11")
 move_speed = null
+airbone_control = null
 slide_speed = null
-jump_force = 750.0
-global_gravity_mul = 3.0
+jump_force = null
+global_gravity_mul = 2.0
 mass = null
 max_extra_jump_count = null
 max_coyote_time = null
@@ -156,18 +157,18 @@ script = ExtResource("6_0gha0")
 
 [node name="HeadScanner" type="RayCast2D" parent="SlideScanner"]
 position = Vector2(24, 24)
-target_position = Vector2(32, 32)
-collision_mask = 16
+target_position = Vector2(0, 24)
+collision_mask = 48
 
 [node name="TailScanner" type="RayCast2D" parent="SlideScanner"]
-position = Vector2(-16, 16)
-target_position = Vector2(-40, 40)
-collision_mask = 16
+position = Vector2(-24, 24)
+target_position = Vector2(-16, 24)
+collision_mask = 48
 
 [node name="CornerScanner" type="RayCast2D" parent="SlideScanner"]
 position = Vector2(24, 0)
 target_position = Vector2(40, 0)
-collision_mask = 16
+collision_mask = 48
 
 [node name="StardustScatterer" parent="SlideScanner" instance=ExtResource("7_q5s7y")]
 collision_layer = 0

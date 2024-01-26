@@ -10,6 +10,7 @@ const PI_2 = PI / 2
 
 @export_category("Player Properties") # You can tweak these changes according to your likings
 @export var move_speed: float = 400
+@export var airbone_control: float = 100
 @export var slide_speed: float = 600
 @export var jump_force: float = 600
 @export var global_gravity_mul: float = 1
@@ -34,6 +35,7 @@ var grounding: Grounding = Grounding.GROUNDED
 @onready var death_particles = $DeathParticles
 @onready var slide_scanner: SlideScanner = $SlideScanner
 @onready var shape: CollisionShape2D = $PlayerShape
+@onready var scatterer: StardustScatterer = $SlideScanner/StardustScatterer
 
 # --------- BUILT-IN FUNCTIONS ---------- #
 
@@ -56,8 +58,8 @@ func move_gravity(_delta):
 
 # <-- Player Movement Code -->
 func movement(_delta):
-	var can_slide = Input.is_action_pressed("slide") && slide_scanner.is_on_sliding_terrain()
-	# var can_slide = slide_scanner.is_on_sliding_terrain()
+	var ctrl_slide = Input.is_action_pressed("slide")
+	var can_slide = ctrl_slide && slide_scanner.is_on_sliding_terrain()
 
 	match grounding:
 		Grounding.GROUNDED:
@@ -88,6 +90,7 @@ func movement(_delta):
 				grounding = Grounding.GROUNDED
 
 		Grounding.LAUNCHED:
+			velocity += Vector2(Input.get_axis("a", "d") * airbone_control, 0)
 			move_gravity(_delta)
 
 			# TODO: Grounding instantly becomes true if launched from ground
@@ -100,14 +103,21 @@ func movement(_delta):
 				elif is_on_floor():
 					grounding = Grounding.GROUNDED
 
-	if can_slide&&!just_stopped_sliding:
-		motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+	if ctrl_slide:
 		if slide_scanner.is_facing_corner():
+			motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 			latch_wall()
-
-		grounding = Grounding.SLIDING
+			grounding = Grounding.SLIDING
+		
+		elif slide_scanner.is_on_sliding_terrain():
+			motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+			grounding = Grounding.SLIDING
+		
+	if grounding == Grounding.SLIDING&&(is_on_wall() || is_on_floor() || is_on_ceiling()):
+		scatterer.scattering = true
 
 	if grounding != Grounding.SLIDING:
+		scatterer.scattering = false
 		motion_mode = CharacterBody2D.MOTION_MODE_GROUNDED
 		if velocity.x != 0:
 			flip_player(velocity.x > 0)

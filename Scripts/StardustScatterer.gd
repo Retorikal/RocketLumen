@@ -1,5 +1,7 @@
 extends Area2D
 
+class_name StardustScatterer
+
 @export var scattering: bool
 
 @onready var cell_poly: ConvexPolygonShape2D = ConvexPolygonShape2D.new()
@@ -16,19 +18,20 @@ func _ready():
 	pass # Replace with function body.
 
 func _physics_process(delta):
-	var areas = get_overlapping_bodies()
-	for area in areas:
-		var potential_chunk = area.get_parent()
-		if potential_chunk is Chunk:
-			subs_colliding_tiles_at_chunk(potential_chunk)
+	if scattering:
+		var areas = get_overlapping_bodies()
+		for area in areas:
+			var potential_chunk = area.get_parent()
+			if potential_chunk is Chunk:
+				subs_colliding_tiles_at_chunk(potential_chunk)
 
 func subs_colliding_tiles_at_chunk(chunk: Chunk):
 	if (coll_shape == null):
 		return
 
 	var rect = coll_shape.shape.get_rect()
-	var tl = chunk.invis_hazard.local_to_map(rect.position + coll_shape.global_position)
-	var br = chunk.invis_hazard.local_to_map(rect.end + coll_shape.global_position)
+	var tl = chunk.invis_hazard.local_to_map(rect.position + chunk.to_local(coll_shape.global_position))
+	var br = chunk.invis_hazard.local_to_map(rect.end + chunk.to_local(coll_shape.global_position))
 
 	for x in range(tl.x, br.x + 1):
 		for y in range(tl.y, br.y + 1):
