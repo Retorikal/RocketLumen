@@ -90,7 +90,7 @@ func movement(_delta):
 				grounding = Grounding.GROUNDED
 
 		Grounding.LAUNCHED:
-			velocity += Vector2(Input.get_axis("a", "d") * airbone_control, 0)
+			velocity += Vector2(Input.get_axis("a", "d") * airbone_control * _delta, 0)
 			move_gravity(_delta)
 
 			# TODO: Grounding instantly becomes true if launched from ground
@@ -171,7 +171,7 @@ func latch_wall():
 
 # Handle Player Animations
 func player_animations():
-	particle_trails.emitting = false
+	particle_trails.emitting = true
 
 	if is_on_floor():
 		if abs(velocity.x) > 0:

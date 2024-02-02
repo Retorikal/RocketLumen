@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://o3030pl4i2se"]
+
+[ext_resource type="Texture2D" uid="uid://n06nklfppaxn" path="res://icon.png" id="1_81hkl"]
+[ext_resource type="Texture2D" uid="uid://eyiwva56geb1" path="res://Assets/sparkatlas.png" id="2_ol20e"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_eo8jt"]
+particle_flag_disable_z = true
+spread = 19.601
+initial_velocity_min = 200.0
+initial_velocity_max = 300.0
+gravity = Vector3(0, 0, 0)
+damping_min = 300.0
+damping_max = 300.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h2h6y"]
+atlas = ExtResource("2_ol20e")
+region = Rect2(0, 10, 5, 5)
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+clip_children = 2
+position = Vector2(152, 72)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Sprite2D"]
+position = Vector2(0, -64)
+texture = ExtResource("1_81hkl")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="Sprite2D/Sprite2D2"]
+position = Vector2(-128, 40)
+amount = 100000
+amount_ratio = 0.2
+process_material = SubResource("ParticleProcessMaterial_eo8jt")
+texture = SubResource("AtlasTexture_h2h6y")
+lifetime = 60.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://w7m6tehvvy3g"]
+[gd_scene load_steps=21 format=3 uid="uid://w7m6tehvvy3g"]
 
 [ext_resource type="Script" path="res://Scripts/Player/Player.gd" id="1_tht11"]
 [ext_resource type="Texture2D" uid="uid://cbss87b7xk5lc" path="res://Assets/Spritesheet/platformerPack_character.png" id="2_q0cxm"]
@@ -76,20 +76,16 @@ point_count = 3
 offsets = PackedFloat32Array(0.25, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t4unu"]
+size = Vector2(65, 16)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wyg38"]
 size = Vector2(128, 56)
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_mask = 48
 script = ExtResource("1_tht11")
-move_speed = null
-airbone_control = null
-slide_speed = null
-jump_force = null
 global_gravity_mul = 2.0
-mass = null
-max_extra_jump_count = null
-max_coyote_time = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
@@ -138,7 +134,8 @@ sibling_hitbox_specifier = "Hurtbox"
 position = Vector2(0, 40)
 emitting = false
 amount = 20
-lifetime = 0.4
+lifetime = 600.0
+preprocess = 199.6
 speed_scale = 0.8
 texture = ExtResource("3_8vxmb")
 emission_shape = 1
@@ -155,15 +152,13 @@ color_ramp = SubResource("Gradient_lfvsn")
 [node name="SlideScanner" type="Node2D" parent="."]
 script = ExtResource("6_0gha0")
 
-[node name="HeadScanner" type="RayCast2D" parent="SlideScanner"]
-position = Vector2(24, 24)
-target_position = Vector2(0, 24)
+[node name="SlideScanner" type="Area2D" parent="SlideScanner"]
+collision_layer = 0
 collision_mask = 48
 
-[node name="TailScanner" type="RayCast2D" parent="SlideScanner"]
-position = Vector2(-24, 24)
-target_position = Vector2(-16, 24)
-collision_mask = 48
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SlideScanner/SlideScanner"]
+position = Vector2(-7.5, 32)
+shape = SubResource("RectangleShape2D_t4unu")
 
 [node name="CornerScanner" type="RayCast2D" parent="SlideScanner"]
 position = Vector2(24, 0)

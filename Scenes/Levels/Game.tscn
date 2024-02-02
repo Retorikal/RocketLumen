@@ -1,0 +1,92 @@
+[gd_scene load_steps=10 format=3 uid="uid://cjanwm3sy2x37"]
+
+[ext_resource type="PackedScene" uid="uid://w7m6tehvvy3g" path="res://Scenes/Prefabs/player.tscn" id="1_tgaat"]
+[ext_resource type="Shader" path="res://Scenes/Levels/Game.gdshader" id="1_vax67"]
+[ext_resource type="Script" path="res://Scripts/GameManager.gd" id="2_fmvkn"]
+[ext_resource type="Script" path="res://Scripts/GameUI.gd" id="3_usg5f"]
+[ext_resource type="Texture2D" uid="uid://clreg520jah1j" path="res://Assets/platformPack_item008.png" id="4_ni63o"]
+[ext_resource type="FontFile" uid="uid://qgc4vi5osk7v" path="res://Assets/Fonts/Star Choco.ttf" id="5_r7spf"]
+[ext_resource type="PackedScene" uid="uid://b53p5hpd1sytn" path="res://Scenes/Chunks/LevelChunkBase.tscn" id="6_3nwbn"]
+[ext_resource type="PackedScene" uid="uid://cgx0hc6y4x3ev" path="res://Scenes/Prefabs/Rubble.tscn" id="7_x0q17"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5msrc"]
+shader = ExtResource("1_vax67")
+
+[node name="Level_01" type="Node2D"]
+material = SubResource("ShaderMaterial_5msrc")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="# GameManager" type="Node2D" parent="."]
+script = ExtResource("2_fmvkn")
+
+[node name="UserInterface" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="GameUI" type="Control" parent="UserInterface"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_usg5f")
+metadata/_edit_use_anchors_ = true
+
+[node name="Score" type="Control" parent="UserInterface/GameUI"]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+metadata/_edit_use_anchors_ = true
+
+[node name="ScoreTexture" type="TextureRect" parent="UserInterface/GameUI/Score"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 116.0
+offset_bottom = 116.0
+texture = ExtResource("4_ni63o")
+stretch_mode = 4
+metadata/_edit_use_anchors_ = true
+
+[node name="ScoreLabel" type="Label" parent="UserInterface/GameUI/Score"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 104.0
+offset_top = 42.0
+offset_right = 148.0
+offset_bottom = 84.0
+theme_override_colors/font_color = Color(0.910156, 0.730469, 0, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("5_r7spf")
+theme_override_font_sizes/font_size = 32
+text = "x 3"
+metadata/_edit_use_anchors_ = true
+
+[node name="LevelChunk" parent="." instance=ExtResource("6_3nwbn")]
+
+[node name="SpawnPoint" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, 280)
+
+[node name="Rubble" parent="." instance=ExtResource("7_x0q17")]
+position = Vector2(100, 100)
+
+[node name="Player" parent="." instance=ExtResource("1_tgaat")]
+z_index = 1
+position = Vector2(0, 312)
+airbone_control = 400.0
+max_extra_jump_count = 0
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player"]

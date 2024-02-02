@@ -2,12 +2,11 @@ extends Node2D
 
 class_name SlideScanner
 
-@onready var head_scanner: RayCast2D = $HeadScanner
-@onready var tail_scanner: RayCast2D = $TailScanner
+@onready var slide_scanner: Area2D = $SlideScanner
 @onready var corn_scanner: RayCast2D = $CornerScanner
 
 func is_on_sliding_terrain():
-	return head_scanner.is_colliding()||tail_scanner.is_colliding()
+	return slide_scanner.get_overlapping_bodies().size() > 0
 
 func is_facing_corner():
 	if corn_scanner.is_colliding():
