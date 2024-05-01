@@ -1,36 +1,123 @@
-[gd_scene load_steps=5 format=3 uid="uid://o3030pl4i2se"]
+[gd_scene load_steps=12 format=3 uid="uid://o3030pl4i2se"]
 
 [ext_resource type="Texture2D" uid="uid://n06nklfppaxn" path="res://icon.png" id="1_81hkl"]
+[ext_resource type="PackedScene" uid="uid://b5uwqslyv6f1s" path="res://Scenes/Prefabs/Destructible.tscn" id="2_nnkq3"]
 [ext_resource type="Texture2D" uid="uid://eyiwva56geb1" path="res://Assets/sparkatlas.png" id="2_ol20e"]
+[ext_resource type="Shader" uid="uid://bfn1idntm4nnb" path="res://Scenes/particle_testing.tres" id="3_w5cb2"]
+[ext_resource type="Material" uid="uid://b2joftyvarfmj" path="res://Scenes/copy_buffer_mat.tres" id="5_qn7cj"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_68xlt"]
+shader = ExtResource("3_w5cb2")
+
+[sub_resource type="Curve" id="Curve_sbqmd"]
+bake_resolution = 99
+_data = [Vector2(0.0033557, 0), 0.0, 0.0, 0, 0, Vector2(0.0100671, 1), -1.16336, -1.16336, 0, 0]
+point_count = 2
+metadata/_snap_count = 13
+
+[sub_resource type="CurveTexture" id="CurveTexture_xmnk2"]
+curve = SubResource("Curve_sbqmd")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_eo8jt"]
 particle_flag_disable_z = true
-spread = 19.601
-initial_velocity_min = 200.0
-initial_velocity_max = 300.0
+spread = 10.0
+initial_velocity_min = 500.0
+initial_velocity_max = 1000.0
 gravity = Vector3(0, 0, 0)
-damping_min = 300.0
-damping_max = 300.0
+damping_min = 100000.0
+damping_max = 100000.0
+damping_curve = SubResource("CurveTexture_xmnk2")
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_h2h6y"]
 atlas = ExtResource("2_ol20e")
 region = Rect2(0, 10, 5, 5)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rka2v"]
+shader = ExtResource("3_w5cb2")
+
 [node name="Node2D" type="Node2D"]
+clip_children = 1
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-clip_children = 2
-position = Vector2(152, 72)
+[node name="Sprite2D9" type="Sprite2D" parent="."]
+position = Vector2(200, 48)
+scale = Vector2(5, 5)
 texture = ExtResource("1_81hkl")
 
-[node name="Sprite2D2" type="Sprite2D" parent="Sprite2D"]
-position = Vector2(0, -64)
-texture = ExtResource("1_81hkl")
+[node name="BackBufferCopy" type="BackBufferCopy" parent="."]
+position = Vector2(280, -80)
+scale = Vector2(1.8, 1.68)
+copy_mode = 2
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="Sprite2D/Sprite2D2"]
-position = Vector2(-128, 40)
-amount = 100000
-amount_ratio = 0.2
+[node name="Node2D" parent="." instance=ExtResource("2_nnkq3")]
+material = SubResource("ShaderMaterial_68xlt")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+position = Vector2(-352, 184)
+amount = 200000
 process_material = SubResource("ParticleProcessMaterial_eo8jt")
 texture = SubResource("AtlasTexture_h2h6y")
 lifetime = 60.0
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+material = ExtResource("5_qn7cj")
+position = Vector2(120, -64)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+material = ExtResource("5_qn7cj")
+position = Vector2(264, -24)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+material = ExtResource("5_qn7cj")
+position = Vector2(256, -96)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D5" type="Sprite2D" parent="."]
+material = ExtResource("5_qn7cj")
+position = Vector2(168, -32)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D6" type="Sprite2D" parent="."]
+material = ExtResource("5_qn7cj")
+position = Vector2(160, -104)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_81hkl")
+
+[node name="CanvasGroup2" type="CanvasGroup" parent="."]
+visible = false
+clip_children = 1
+material = SubResource("ShaderMaterial_rka2v")
+position = Vector2(168, -216)
+
+[node name="Sprite2D2" type="Sprite2D" parent="CanvasGroup2"]
+position = Vector2(152, 56)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D3" type="Sprite2D" parent="CanvasGroup2"]
+position = Vector2(192, 48)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D4" type="Sprite2D" parent="CanvasGroup2"]
+position = Vector2(208, 136)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D5" type="Sprite2D" parent="CanvasGroup2"]
+position = Vector2(176, 232)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D6" type="Sprite2D" parent="CanvasGroup2"]
+position = Vector2(128, 120)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D7" type="Sprite2D" parent="CanvasGroup2"]
+position = Vector2(48, 200)
+texture = ExtResource("1_81hkl")
+
+[node name="Sprite2D8" type="Sprite2D" parent="CanvasGroup2"]
+position = Vector2(8, 152)
+texture = ExtResource("1_81hkl")

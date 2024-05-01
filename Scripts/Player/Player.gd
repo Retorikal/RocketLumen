@@ -40,13 +40,10 @@ var grounding: Grounding = Grounding.GROUNDED
 # --------- BUILT-IN FUNCTIONS ---------- #
 
 func _process(_delta):
-	# Calling functions
-	pass
 	player_animations()
 
 func _physics_process(_delta):
-	# Update grounding
-
+	update_state()
 	movement(_delta)
 	pass
 
@@ -56,45 +53,24 @@ func move_gravity(_delta):
 	var accel = gravity * _delta *global_gravity_mul
 	velocity.y += accel
 
-# <-- Player Movement Code -->
-func movement(_delta):
+func update_state():
 	var ctrl_slide = Input.is_action_pressed("slide")
 	var can_slide = ctrl_slide && slide_scanner.is_on_sliding_terrain()
 
 	match grounding:
 		Grounding.GROUNDED:
-			coyote_time = max_coyote_time
-			extra_jump_count = max_extra_jump_count
-			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
-			handle_jump()
-
 			if !is_on_floor():
 				grounding = Grounding.AIRBONE
-
 		Grounding.SLIDING:
-			handle_jump()
-			
 			if !can_slide:
 				if is_on_floor():
 					grounding = Grounding.GROUNDED
 				else:
 					grounding = Grounding.LAUNCHED
-
 		Grounding.AIRBONE:
-			move_gravity(_delta)
-			coyote_time -= _delta
-			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
-			handle_jump()
-
 			if is_on_floor():
 				grounding = Grounding.GROUNDED
-
 		Grounding.LAUNCHED:
-			velocity += Vector2(Input.get_axis("a", "d") * airbone_control * _delta, 0)
-			move_gravity(_delta)
-
-			# TODO: Grounding instantly becomes true if launched from ground
-
 			if just_launched:
 				just_launched = false
 			else:
@@ -103,15 +79,35 @@ func movement(_delta):
 				elif is_on_floor():
 					grounding = Grounding.GROUNDED
 
+	# All state can change to SLIDING
 	if ctrl_slide:
 		if slide_scanner.is_facing_corner():
 			motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 			latch_wall()
 			grounding = Grounding.SLIDING
 		
-		elif slide_scanner.is_on_sliding_terrain():
+		elif slide_scanner.is_on_sliding_terrain()&&(is_on_wall() || is_on_floor() || is_on_ceiling()):
 			motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 			grounding = Grounding.SLIDING
+
+# <-- Player Movement Code -->
+func movement(_delta):
+	match grounding:
+		Grounding.GROUNDED:
+			coyote_time = max_coyote_time
+			extra_jump_count = max_extra_jump_count
+			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
+			handle_jump()
+		Grounding.SLIDING:
+			handle_jump()
+		Grounding.AIRBONE:
+			move_gravity(_delta)
+			coyote_time -= _delta
+			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
+			handle_jump()
+		Grounding.LAUNCHED:
+			velocity += Vector2(Input.get_axis("a", "d") * airbone_control * _delta, 0)
+			move_gravity(_delta)
 		
 	if grounding == Grounding.SLIDING&&(is_on_wall() || is_on_floor() || is_on_ceiling()):
 		scatterer.scattering = true
@@ -129,6 +125,8 @@ func movement(_delta):
 		# Snap to slide location
 
 	move_and_slide()
+	slide_scanner.set_scan_distance(_delta *velocity)
+	print("Player:movement", velocity)
 
 func handle_jump():
 	if Input.is_action_pressed("jump"):
@@ -167,7 +165,7 @@ func latch_wall():
 	var basevec = Vector2(velocity.length()* -facing_mul, 0)
 	velocity = basevec.rotated(rotation)
 
-	print(rad_to_deg(rotation), " - ", basevec, " - ", velocity)
+	print("Player:latch_wall", rad_to_deg(rotation), " - ", basevec, " - ", velocity)
 
 # Handle Player Animations
 func player_animations():
@@ -220,6 +218,7 @@ func apply_force(force: Vector2):
 	just_launched = true
 	var launched_vector = force / mass
 	velocity = launched_vector
+	print("Player:apply_force", force, velocity)
 	pass
 
 # --------- SIGNALS ---------- #

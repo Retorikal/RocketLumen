@@ -1,0 +1,44 @@
+[gd_resource type="VisualShader" load_steps=4 format=3 uid="uid://bfn1idntm4nnb"]
+
+[sub_resource type="VisualShaderNodeTexture" id="VisualShaderNodeTexture_cib7a"]
+source = 1
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_b3ve1"]
+input_name = "screen_uv"
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_bci85"]
+input_name = "texture"
+
+[resource]
+code = "shader_type canvas_item;
+render_mode blend_mix;
+
+uniform sampler2D screen_tex_frg_4 : hint_screen_texture;
+
+
+
+void fragment() {
+// Input:6
+	vec2 n_out6p0 = SCREEN_UV;
+
+
+	vec4 n_out4p0;
+// Texture2D:4
+	n_out4p0 = texture(screen_tex_frg_4, n_out6p0);
+
+
+// Output:0
+	COLOR.rgb = vec3(n_out4p0.xyz);
+
+
+}
+"
+mode = 1
+flags/light_only = false
+nodes/fragment/4/node = SubResource("VisualShaderNodeTexture_cib7a")
+nodes/fragment/4/position = Vector2(20, 200)
+nodes/fragment/6/node = SubResource("VisualShaderNodeInput_b3ve1")
+nodes/fragment/6/position = Vector2(-420, 280)
+nodes/fragment/7/node = SubResource("VisualShaderNodeInput_bci85")
+nodes/fragment/7/position = Vector2(-400, 400)
+nodes/fragment/connections = PackedInt32Array(4, 0, 0, 0, 6, 0, 4, 0)

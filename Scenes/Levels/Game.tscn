@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cjanwm3sy2x37"]
+[gd_scene load_steps=12 format=3 uid="uid://cjanwm3sy2x37"]
 
 [ext_resource type="PackedScene" uid="uid://w7m6tehvvy3g" path="res://Scenes/Prefabs/player.tscn" id="1_tgaat"]
 [ext_resource type="Shader" path="res://Scenes/Levels/Game.gdshader" id="1_vax67"]
@@ -6,22 +6,17 @@
 [ext_resource type="Script" path="res://Scripts/GameUI.gd" id="3_usg5f"]
 [ext_resource type="Texture2D" uid="uid://clreg520jah1j" path="res://Assets/platformPack_item008.png" id="4_ni63o"]
 [ext_resource type="FontFile" uid="uid://qgc4vi5osk7v" path="res://Assets/Fonts/Star Choco.ttf" id="5_r7spf"]
-[ext_resource type="PackedScene" uid="uid://b53p5hpd1sytn" path="res://Scenes/Chunks/LevelChunkBase.tscn" id="6_3nwbn"]
+[ext_resource type="Script" path="res://Scripts/Chunk.gd" id="6_64lcf"]
+[ext_resource type="TileSet" uid="uid://bus38ugefrj5o" path="res://Assets/TilesetHazard.tres" id="7_oisw1"]
 [ext_resource type="PackedScene" uid="uid://cgx0hc6y4x3ev" path="res://Scenes/Prefabs/Rubble.tscn" id="7_x0q17"]
+[ext_resource type="TileSet" uid="uid://bfr72xgwcy5qa" path="res://Assets/TilesetGround.tres" id="8_t38s1"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5msrc"]
 shader = ExtResource("1_vax67")
 
 [node name="Level_01" type="Node2D"]
 material = SubResource("ShaderMaterial_5msrc")
-
-[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
-handle_input_locally = false
-render_target_update_mode = 4
+position = Vector2(576, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 
@@ -74,7 +69,26 @@ theme_override_font_sizes/font_size = 32
 text = "x 3"
 metadata/_edit_use_anchors_ = true
 
-[node name="LevelChunk" parent="." instance=ExtResource("6_3nwbn")]
+[node name="Terrain" type="Node2D" parent="."]
+
+[node name="Hazards" type="Node2D" parent="Terrain" node_paths=PackedStringArray("invis_hazard", "solid_ground")]
+script = ExtResource("6_64lcf")
+invis_hazard = NodePath("Hazard")
+solid_ground = NodePath("../Grounds/Ground")
+solid_substitute_atlas_idx = Vector2i(4, 3)
+
+[node name="Hazard" type="TileMap" parent="Terrain/Hazards" groups=["Ground"]]
+visibility_layer = 2
+tile_set = ExtResource("7_oisw1")
+format = 2
+layer_0/tile_data = PackedInt32Array(589815, 262144, 1, 589816, 262144, 1, 589817, 262144, 1, 589818, 262144, 1, 589819, 262144, 1, 589820, 262144, 1, 589821, 262144, 1, 589822, 262144, 1, 524292, 262144, 1, 524293, 262144, 1, 524294, 262144, 1, 524295, 262144, 1, 524296, 262144, 1, 524289, 262144, 1, 524290, 262144, 1, 524291, 262144, 1, -196600, 262144, 1, -131081, 262144, 1, 262135, 262144, 1, 196616, 262144, 1, 196613, 262144, 1, 196614, 262144, 1, 196615, 262144, 1, 262136, 262144, 1, 262137, 262144, 1, 262138, 262144, 1, -524292, 262144, 1, -458756, 262144, 1, -393220, 262144, 1, -327684, 262144, 1, -262148, 262144, 1, -196612, 262144, 1, -131076, 262144, 1, -65540, 262144, 1, -4, 262144, 1, -65533, 262144, 1, -131069, 262144, 1, -196605, 262144, 1, -262141, 262144, 1, -327677, 262144, 1, -393213, 262144, 1, -458749, 262144, 1, -524285, 262144, 1, -589821, 262144, 1, -524296, 262144, 1, -524295, 262144, 1, -524294, 262144, 1, -524293, 262144, 1, -458761, 262144, 1, -393225, 262144, 1, -327689, 262144, 1, -262153, 262144, 1, -196617, 262144, 1, -589820, 262144, 1, -589819, 262144, 1, -589818, 262144, 1, -589817, 262144, 1, -524280, 262144, 1, -458744, 262144, 1, -393208, 262144, 1, -327672, 262144, 1, -262136, 262144, 1, -65530, 262144, 1, -65529, 262144, 1, -65528, 262144, 1, -9, 262144, 1, -8, 262144, 1, -7, 262144, 1, 327671, 262144, 1, 393207, 262144, 1, 458743, 262144, 1, 524279, 262144, 1, 262152, 262144, 1, 327688, 262144, 1, 393224, 262144, 1, 458760, 262144, 1, 327674, 262144, 1, 393210, 262144, 1, 458746, 262144, 1, 262149, 262144, 1, 327685, 262144, 1, 393221, 262144, 1)
+
+[node name="Grounds" type="Node2D" parent="Terrain"]
+
+[node name="Ground" type="TileMap" parent="Terrain/Grounds" groups=["Traps"]]
+tile_set = ExtResource("8_t38s1")
+format = 2
+layer_0/tile_data = PackedInt32Array(262140, 262144, 3, 262141, 262144, 3, 262142, 262144, 3, 262143, 262144, 3, 196608, 262144, 3, 196609, 262144, 3, 196610, 262144, 3, -524297, 262144, 3, 196611, 262144, 3, -589816, 262144, 3, 589823, 262144, 3, 524288, 262144, 3)
 
 [node name="SpawnPoint" type="Node2D" parent="."]
 unique_name_in_owner = true
@@ -88,5 +102,3 @@ z_index = 1
 position = Vector2(0, 312)
 airbone_control = 400.0
 max_extra_jump_count = 0
-
-[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player"]

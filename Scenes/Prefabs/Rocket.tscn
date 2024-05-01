@@ -23,11 +23,10 @@ collision_layer = 0
 collision_mask = 0
 physics_material_override = SubResource("PhysicsMaterial_7vcwg")
 gravity_scale = 0.0
-max_contacts_reported = 1
 contact_monitor = true
+max_contacts_reported = 1
 script = ExtResource("1_lnpsl")
-max_lifetime = 0.3
-launcher_velocity = null
+max_lifetime = 0.1
 payload = ExtResource("2_1gy0j")
 
 [node name="ParticleTrails" type="CPUParticles2D" parent="."]

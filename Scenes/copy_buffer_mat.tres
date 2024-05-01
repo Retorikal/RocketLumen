@@ -1,0 +1,6 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://b2joftyvarfmj"]
+
+[ext_resource type="Shader" path="res://Scenes/particle_testing.gdshader" id="1_pwnka"]
+
+[resource]
+shader = ExtResource("1_pwnka")

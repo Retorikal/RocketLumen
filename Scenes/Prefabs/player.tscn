@@ -77,7 +77,7 @@ offsets = PackedFloat32Array(0.25, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_t4unu"]
-size = Vector2(65, 16)
+size = Vector2(48, 8)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wyg38"]
 size = Vector2(128, 56)
@@ -151,13 +151,14 @@ color_ramp = SubResource("Gradient_lfvsn")
 
 [node name="SlideScanner" type="Node2D" parent="."]
 script = ExtResource("6_0gha0")
+minimum_extension_length = 16.0
 
 [node name="SlideScanner" type="Area2D" parent="SlideScanner"]
 collision_layer = 0
 collision_mask = 48
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SlideScanner/SlideScanner"]
-position = Vector2(-7.5, 32)
+position = Vector2(0, 28)
 shape = SubResource("RectangleShape2D_t4unu")
 
 [node name="CornerScanner" type="RayCast2D" parent="SlideScanner"]

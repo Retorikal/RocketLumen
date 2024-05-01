@@ -44,7 +44,6 @@ func detonate(location: Vector2):
 		return
 
 	exploded = true
-	print("boom")
 	trails.emitting = false
 	set_deferred("freeze", true)
 	body_sprite.set_deferred("visible", false)

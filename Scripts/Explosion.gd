@@ -20,7 +20,7 @@ func _on_gpu_particles_2d_finished():
 	pass # Replace with function body.
 
 func _on_hitbox_body_entered(body: Node2D):
-	print("Launching:", body)
 	if body.has_method("apply_force"):
-		var direction = (body.position - position).normalized()
+		var direction = (body.global_position - global_position).normalized()
+		print("Explosion:_on_hitbox_body_entered", body.global_position, global_position)
 		body.apply_force(direction * blow_force)
