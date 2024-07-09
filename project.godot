@@ -19,6 +19,10 @@ config/icon="res://icon.png"
 
 FMODRuntime="*res://addons/FMOD/runtime/fmod_runtime_manager.gd"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/FMOD/plugin.cfg")
+
 [fmod]
 
 settings/banks_path="res://banks/Desktop"

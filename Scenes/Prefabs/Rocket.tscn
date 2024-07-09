@@ -26,7 +26,7 @@ gravity_scale = 0.0
 contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("1_lnpsl")
-max_lifetime = 0.1
+max_lifetime = 0.3
 payload = ExtResource("2_1gy0j")
 
 [node name="ParticleTrails" type="CPUParticles2D" parent="."]

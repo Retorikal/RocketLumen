@@ -2,6 +2,7 @@ extends Area2D
 
 class_name StardustScatterer
 
+@export var scatterer: GPUParticles2D
 @export var scattering: bool
 
 @onready var cell_poly: ConvexPolygonShape2D = ConvexPolygonShape2D.new()
@@ -33,6 +34,9 @@ func subs_colliding_tiles_at_chunk(chunk: Chunk):
 	var tl = chunk.invis_hazard.local_to_map(rect.position + chunk.to_local(coll_shape.global_position))
 	var br = chunk.invis_hazard.local_to_map(rect.end + chunk.to_local(coll_shape.global_position))
 
+	# Iterate for all cell in chunk, then check if it is revealable
+
+	var must_draw_dust = false
 	for x in range(tl.x, br.x + 1):
 		for y in range(tl.y, br.y + 1):
 			var map_pos = Vector2i(x, y)
@@ -45,8 +49,11 @@ func subs_colliding_tiles_at_chunk(chunk: Chunk):
 				cell_poly.set_point_cloud(local_cell_pcl)
 				if cell_poly.collide(tf, coll_shape.shape, global_transform):
 					chunk.substitute_cell(Vector2i(x, y))
+					must_draw_dust = true
 
-			pass
+func draw_dust():
+
+	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

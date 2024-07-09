@@ -52,7 +52,7 @@ copy_mode = 2
 material = SubResource("ShaderMaterial_68xlt")
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
-position = Vector2(-352, 184)
+position = Vector2(208, -48)
 amount = 200000
 process_material = SubResource("ParticleProcessMaterial_eo8jt")
 texture = SubResource("AtlasTexture_h2h6y")

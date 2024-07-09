@@ -1,7 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://ccqp2c5jdmv27"]
-
-[ext_resource type="Script" path="res://Scripts/LayerCapture.gd" id="1_8gyhf"]
-[ext_resource type="PackedScene" uid="uid://cjanwm3sy2x37" path="res://Scenes/Levels/Game.tscn" id="1_nfn30"]
+[gd_scene format=3 uid="uid://ccqp2c5jdmv27"]
 
 [node name="View" type="Node2D"]
 
@@ -18,26 +15,3 @@ drag_right_margin = 0.15
 drag_bottom_margin = 0.05
 editor_draw_limits = true
 editor_draw_drag_margin = true
-
-[node name="Main" type="SubViewportContainer" parent="."]
-offset_right = 2048.0
-offset_bottom = 2048.0
-
-[node name="SubViewport" type="SubViewport" parent="Main"]
-handle_input_locally = false
-canvas_cull_mask = 4293918723
-size = Vector2i(2048, 2048)
-render_target_update_mode = 4
-
-[node name="Sky" type="SubViewportContainer" parent="Main/SubViewport"]
-offset_right = 512.0
-offset_bottom = 512.0
-
-[node name="SubViewport" type="SubViewport" parent="Main/SubViewport/Sky" node_paths=PackedStringArray("world_2d_source")]
-handle_input_locally = false
-canvas_cull_mask = 4293918722
-render_target_update_mode = 4
-script = ExtResource("1_8gyhf")
-world_2d_source = NodePath("../..")
-
-[node name="Level_01" parent="Main/SubViewport" instance=ExtResource("1_nfn30")]
