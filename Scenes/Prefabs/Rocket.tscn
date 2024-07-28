@@ -27,7 +27,7 @@ contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("1_lnpsl")
 max_lifetime = 0.3
-payload = ExtResource("2_1gy0j")
+payload_template = ExtResource("2_1gy0j")
 
 [node name="ParticleTrails" type="CPUParticles2D" parent="."]
 position = Vector2(-16, 0)

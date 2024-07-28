@@ -10,7 +10,7 @@ class_name Rocket
 @export var base_velocity = 2000
 @export var max_lifetime = 1.5
 @export var launcher_velocity = Vector2(0, 0)
-@export var payload: PackedScene
+@export var payload_template: PackedScene
 # @export var primed = false
 var owner_hurtbox: Node
 var primed_selfhit = false
@@ -49,11 +49,9 @@ func detonate(location: Vector2):
 	body_sprite.set_deferred("visible", false)
 	hurtbox.set_deferred("disabled", true)
 
-	var marker: Node2D = payload.instantiate()
-	marker.position = location
-	
-	get_tree().root.call_deferred("add_child", marker)
-	pass
+	var payload: Node2D = payload_template.instantiate()
+	payload.position = location
+	get_tree().root.call_deferred("add_child", payload)
 
 	await get_tree().create_timer(1.0).timeout
 	queue_free()

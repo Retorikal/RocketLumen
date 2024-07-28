@@ -1,6 +1,6 @@
 extends Area2D
 
-class_name StardustScatterer
+class_name TileWatch
 
 @export var scatterer: GPUParticles2D
 @export var scattering: bool

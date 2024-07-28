@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cjanwm3sy2x37"]
+[gd_scene load_steps=14 format=3 uid="uid://cjanwm3sy2x37"]
 
 [ext_resource type="PackedScene" uid="uid://w7m6tehvvy3g" path="res://Scenes/Prefabs/player.tscn" id="1_tgaat"]
 [ext_resource type="Shader" path="res://Scenes/Levels/Game.gdshader" id="1_vax67"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://2a2sa8c7mxxm" path="res://Assets/spark.png" id="6_amole"]
 [ext_resource type="Script" path="res://Scenes/Levels/TerrainGenerator.gd" id="6_qd6p8"]
 [ext_resource type="PackedScene" uid="uid://b53p5hpd1sytn" path="res://Scenes/Chunks/LevelChunkBase.tscn" id="7_3is40"]
+[ext_resource type="Script" path="res://Scripts/PlayerDust.gd" id="7_fpqnu"]
 [ext_resource type="PackedScene" uid="uid://cgx0hc6y4x3ev" path="res://Scenes/Prefabs/Rubble.tscn" id="7_x0q17"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5msrc"]
@@ -16,8 +17,7 @@ shader = ExtResource("1_vax67")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_bsiuy"]
 direction = Vector3(0, 1, 0)
-spread = 60.0
-initial_velocity_min = 1000.0
+initial_velocity_min = 800.0
 initial_velocity_max = 1500.0
 gravity = Vector3(0, 0, 0)
 damping_min = 7500.0
@@ -82,6 +82,7 @@ metadata/_edit_use_anchors_ = true
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
 
 [node name="Base" type="ParallaxLayer" parent="ParallaxBackground"]
+modulate = Color(0.64, 0.54592, 0.3712, 1)
 motion_scale = Vector2(0, 0)
 motion_mirroring = Vector2(1152, 640)
 
@@ -90,6 +91,7 @@ color = Color(0, 0, 0, 1)
 polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 648, 0, 648)
 
 [node name="ParallaxLayer3" type="ParallaxLayer" parent="ParallaxBackground"]
+modulate = Color(0.64, 0.54592, 0.3712, 1)
 motion_scale = Vector2(0.1, 0.1)
 motion_mirroring = Vector2(1152, 640)
 
@@ -250,6 +252,7 @@ position = Vector2(-85.5, 26.5)
 texture = ExtResource("6_amole")
 
 [node name="ParallaxLayer4" type="ParallaxLayer" parent="ParallaxBackground"]
+modulate = Color(0.64, 0.54592, 0.3712, 1)
 motion_scale = Vector2(0.25, 0.25)
 motion_mirroring = Vector2(1152, 640)
 
@@ -449,6 +452,7 @@ scale = Vector2(2.5, 2.5)
 texture = ExtResource("6_amole")
 
 [node name="ParallaxLayer2" type="ParallaxLayer" parent="ParallaxBackground"]
+modulate = Color(0.64, 0.54592, 0.3712, 1)
 motion_scale = Vector2(0.5, 0.5)
 motion_mirroring = Vector2(1152, 640)
 
@@ -518,6 +522,7 @@ scale = Vector2(5, 5)
 texture = ExtResource("6_amole")
 
 [node name="ParallaxLayer1" type="ParallaxLayer" parent="ParallaxBackground"]
+modulate = Color(0.64, 0.54592, 0.3712, 1)
 motion_scale = Vector2(0.75, 0.75)
 motion_mirroring = Vector2(1152, 640)
 
@@ -590,13 +595,17 @@ texture = ExtResource("6_amole")
 position = Vector2(-576, 0)
 copy_mode = 2
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+[node name="ParticleContainer" type="Node2D" parent="." groups=["ObscuredParticle", "Player"]]
+
+[node name="TileRevealParticles" type="GPUParticles2D" parent="ParticleContainer"]
 position = Vector2(-576, -16)
+emitting = false
 amount = 10000
 process_material = SubResource("ParticleProcessMaterial_bsiuy")
 texture = ExtResource("6_amole")
 lifetime = 50.0
 visibility_rect = Rect2(-100, -100, 202.2, 200)
+script = ExtResource("7_fpqnu")
 
 [node name="Terrain" type="Node2D" parent="." node_paths=PackedStringArray("seed_tile")]
 position = Vector2(-576, 0)
@@ -627,7 +636,8 @@ position_smoothing_enabled = true
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player"]
 position = Vector2(0, -16)
-remote_path = NodePath("../../GPUParticles2D")
+remote_path = NodePath("../../ParticleContainer/TileRevealParticles")
 update_scale = false
 
 [connection signal="border_passed" from="Terrain/LevelChunk" to="Terrain" method="_on_level_chunk_border_passed"]
+[connection signal="toggle_revealing" from="Player" to="ParticleContainer/TileRevealParticles" method="_on_player_toggle_revealing"]

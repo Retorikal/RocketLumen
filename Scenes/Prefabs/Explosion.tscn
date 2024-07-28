@@ -1,29 +1,23 @@
 [gd_scene load_steps=8 format=3 uid="uid://cw6lvug11w46c"]
 
 [ext_resource type="Script" path="res://Scripts/Explosion.gd" id="1_0qvpm"]
-[ext_resource type="Script" path="res://Scripts/StardustScatterer.gd" id="2_8jjls"]
+[ext_resource type="Script" path="res://Scripts/TileWatch.gd" id="2_8jjls"]
+[ext_resource type="Texture2D" uid="uid://2a2sa8c7mxxm" path="res://Assets/spark.png" id="2_qehvg"]
+[ext_resource type="Script" path="res://Scripts/PlayerDust.gd" id="3_avejv"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wcygo"]
+spread = 180.0
+initial_velocity_min = 1000.0
+initial_velocity_max = 1750.0
+gravity = Vector3(0, 0, 0)
+damping_min = 7500.0
+damping_max = 10000.0
+scale_min = 5.0
+scale_max = 5.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_wjyq8"]
 custom_solver_bias = 1.0
 radius = 75.0
-
-[sub_resource type="Gradient" id="Gradient_obrc0"]
-offsets = PackedFloat32Array(0, 0.592593, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.881481, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_cbgjn"]
-gradient = SubResource("Gradient_obrc0")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_4ncbg"]
-spread = 180.0
-initial_velocity_min = 1000.0
-initial_velocity_max = 1000.0
-gravity = Vector3(0, 0, 0)
-damping_min = 7000.0
-damping_max = 7000.0
-scale_min = 10.0
-scale_max = 15.0
-color_ramp = SubResource("GradientTexture1D_cbgjn")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mju2r"]
 radius = 128.0
@@ -33,16 +27,24 @@ collision_layer = 0
 script = ExtResource("1_0qvpm")
 blow_force = 2000.0
 
+[node name="ExplodeParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 120
+process_material = SubResource("ParticleProcessMaterial_wcygo")
+texture = ExtResource("2_qehvg")
+lifetime = 50.0
+one_shot = true
+explosiveness = 1.0
+visibility_rect = Rect2(-100, -100, 202.2, 200)
+script = ExtResource("3_avejv")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_wjyq8")
 
-[node name="Particles" type="GPUParticles2D" parent="."]
-emitting = false
-amount = 100
-process_material = SubResource("ParticleProcessMaterial_4ncbg")
-lifetime = 0.3
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.3
 one_shot = true
-explosiveness = 1.0
+autostart = true
 
 [node name="StardustScatterer" type="Area2D" parent="."]
 collision_layer = 0
@@ -54,4 +56,4 @@ scattering = true
 shape = SubResource("CircleShape2D_mju2r")
 
 [connection signal="body_entered" from="." to="." method="_on_hitbox_body_entered"]
-[connection signal="finished" from="Particles" to="." method="_on_gpu_particles_2d_finished"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

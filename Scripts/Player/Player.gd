@@ -2,6 +2,9 @@ extends CharacterBody2D
 
 class_name Player
 
+signal toggle_revealing(revealing: bool)
+signal state_changed(prev: Grounding, next: Grounding)
+
 enum Grounding {GROUNDED, AIRBONE, LAUNCHED, SLIDING}
 enum SlideDir {FACE_0, FACE_90, FACE_180, FACE_270}
 const PI_2 = PI / 2
@@ -35,7 +38,7 @@ var grounding: Grounding = Grounding.GROUNDED
 @onready var death_particles = $DeathParticles
 @onready var slide_scanner: SlideScanner = $SlideScanner
 @onready var shape: CollisionShape2D = $PlayerShape
-@onready var scatterer: StardustScatterer = $SlideScanner/StardustScatterer
+@onready var scatterer: TileWatch = $SlideScanner/TileWatch
 
 # --------- BUILT-IN FUNCTIONS ---------- #
 
@@ -43,7 +46,7 @@ func _process(_delta):
 	player_animations()
 
 func _physics_process(_delta):
-	update_state()
+	update_grounding()
 	movement(_delta)
 	pass
 
@@ -53,9 +56,10 @@ func move_gravity(_delta):
 	var accel = gravity * _delta *global_gravity_mul
 	velocity.y += accel
 
-func update_state():
+func update_grounding():
 	var ctrl_slide = Input.is_action_pressed("slide")
-	var can_slide = ctrl_slide && slide_scanner.is_on_sliding_terrain()
+	var can_slide = ctrl_slide && slide_scanner.is_on_sliding_terrain() && velocity.length() > 0
+	var prev_grounding = grounding
 
 	match grounding:
 		Grounding.GROUNDED:
@@ -64,8 +68,10 @@ func update_state():
 		Grounding.SLIDING:
 			if !can_slide:
 				if is_on_floor():
+					emit_signal("toggle_revealing", false)
 					grounding = Grounding.GROUNDED
 				else:
+					emit_signal("toggle_revealing", false)
 					grounding = Grounding.LAUNCHED
 		Grounding.AIRBONE:
 			if is_on_floor():
@@ -85,10 +91,15 @@ func update_state():
 			motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 			latch_wall()
 			grounding = Grounding.SLIDING
+			emit_signal("toggle_revealing", true)
 		
 		elif slide_scanner.is_on_sliding_terrain()&&(is_on_wall() || is_on_floor() || is_on_ceiling()):
 			motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 			grounding = Grounding.SLIDING
+			emit_signal("toggle_revealing", true)
+
+	if prev_grounding != grounding:
+		emit_signal("state_changed", prev_grounding, grounding)
 
 # <-- Player Movement Code -->
 func movement(_delta):
@@ -99,6 +110,8 @@ func movement(_delta):
 			velocity = Vector2(Input.get_axis("a", "d") * move_speed, velocity.y)
 			handle_jump()
 		Grounding.SLIDING:
+			if velocity.length() < slide_speed:
+				velocity = velocity.normalized() * slide_speed
 			handle_jump()
 		Grounding.AIRBONE:
 			move_gravity(_delta)
